@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id" manifest="Cache.manifest">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lapse 2.0 PS4 by MGstore</title>
+<link rel="stylesheet" href="apache.css">
+<script>
+if (window.history && window.history.replaceState) {
+    history.replaceState(null, null, "index.html");
+    var histlength = history.length;
+    if (histlength > 0) {
+        history.go(-histlength);
+    }
+}
+
+function setMsg(htmlContent, type) {
+    var msgsElem = document.getElementById("msgs");
+    if (!msgsElem) return;
+
+    msgsElem.className = "";
+    if (type === "success") {
+        msgsElem.classList.add("success");
+    } else if (type === "error") {
+        msgsElem.classList.add("error");
+    } else if (type === "running") {
+        msgsElem.classList.add("running");
+    }
+    msgsElem.innerHTML = htmlContent;
+}
+</script>
+</head>
+<body>
+<div class="container">
+    <div class="logo-container">
+        <img src="logo.png" alt="Logo Wobkot" class="logo">
+    </div>
+
+    <div class="header-title">Lapse 2.0 PS4 by MGstore</div>
+
+    <div class="status-card">
+        <div id="msgs">Memulai Instalasi Cache...</div>
+        <div id="detail">Menyiapkan manifest cache offline</div>
+        <div class="progress-container">
+            <div id="pbar" class="progress-bar"></div>
+        </div>
+        <div id="percent">0%</div>
+        <a id="back" href="index.html">Kembali ke Menu</a>
+    </div>
+
+    <div class="thanks-section">
+        <h3>TERIMA KASIH KEPADA:</h3>
+        <div class="credits-list">
+            <span class="credit-item">GamerHack93</span>
+            <span class="credit-item">sleirsgoevy</span>
+            <span class="credit-item">TheFlow</span>
+            <span class="credit-item">Flatz</span>
+            <span class="credit-item">Egycnq</span>
+            <span class="credit-item">Jordy</span>
+            <span class="credit-item">Sonic-Iso</span>
+            <span class="credit-item">Abc</span>
+            <span class="credit-item">Prb29327239</span>
+            <span class="credit-item">Ufm42</span>
+            <span class="credit-item">Feyzee61</span>
+            <span class="credit-item">AlAzif</span>
+            <span class="credit-item">ChendoChap</span>
+            <span class="credit-item">Kameleonre_</span>
+            <span class="credit-item">SiSTR0</span>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; Lapse 2.0 PS4 by MGstore</p>
+</footer>
+
+<script>
+(function(){
+    var app = window.applicationCache;
+    var bar = document.getElementById("pbar");
+    var percent = document.getElementById("percent");
+    var detail = document.getElementById("detail");
+    var finished = false;
+
+    function setProgress(p, msg, info, type) {
+        p = Math.max(0, Math.min(100, p));
+        if (bar) bar.style.width = p + "%";
+        if (percent) percent.textContent = p + "%";
+        setMsg(msg, type || "running");
+        if (detail) detail.textContent = info || "";
+    }
+
+    function finish(msg, info) {
+        if (finished) return;
+        finished = true;
+        setProgress(100, msg, info || "Membuka Wobkot PS4...", "success");
+        window.setTimeout(function(){
+            window.location.replace("index.html");
+        }, 1000);
+    }
+
+    if (!app) {
+        setProgress(0, "Application Cache Tidak Tersedia", "Browser tidak mendukung cache host.", "error");
+        return;
+    }
+
+    app.addEventListener("checking", function(){
+        setProgress(0, "Memeriksa Cache Wobkot PS4...", "Memeriksa versi manifest", "running");
+    }, false);
+
+    app.addEventListener("downloading", function(){
+        setProgress(0, "Menginstal Cache Offline...", "Mengunduh berkas host yang diperlukan", "running");
+    }, false);
+
+    app.addEventListener("progress", function(e){
+        var total = e.total || 0;
+        var loaded = e.loaded || 0;
+        var p = total ? Math.round((loaded / total) * 100) : 0;
+        setProgress(p, "Menginstal Cache Offline: " + p + "%", loaded + " / " + total + " berkas", "running");
+    }, false);
+
+    app.addEventListener("cached", function(){
+        finish("Cache Berhasil Diinstal — 100%", "Semua berkas Wobkot PS4 telah tersimpan");
+    }, false);
+
+    app.addEventListener("updateready", function(){
+        try { app.swapCache(); } catch (e) {}
+        finish("Pembaruan Cache Selesai — 100%", "Versi host baru siap digunakan");
+    }, false);
+
+    app.addEventListener("noupdate", function(){
+        finish("Cache Wobkot PS4 Sudah Terbaru — 100%", "Tidak ada pembaruan baru");
+    }, false);
+
+    app.addEventListener("error", function(){
+        if (app.status !== app.UNCACHED) {
+            finish("Menggunakan Cache Wobkot yang Ada", "Pembaruan gagal; melanjutkan dengan cache tersimpan");
+        } else {
+            setProgress(0, "Kesalahan Saat Menginstal Cache! - Bersihkan dan Buka Kembali Browser Anda ...", "Periksa koneksi host lalu muat ulang halaman", "error");
+        }
+    }, false);
+
+    app.addEventListener("obsolete", function(){
+        setProgress(0, "Cache Kedaluwarsa", "Muat ulang host untuk membuat cache baru", "error");
+    }, false);
+
+    if (window.location.search.indexOf("update=1") !== -1) {
+        setProgress(0, "Memperbarui Cache Wobkot PS4...", "Memeriksa berkas terbaru", "running");
+        window.setTimeout(function(){
+            try { app.update(); }
+            catch (e) { setProgress(0, "Gagal Memperbarui Cache", String(e), "error"); }
+        }, 300);
+    } else if (app.status === app.IDLE) {
+        finish("Cache Wobkot PS4 Siap — 100%", "Menggunakan berkas host tersimpan");
+    } else if (app.status === app.UPDATEREADY) {
+        try { app.swapCache(); } catch (e) {}
+        finish("Pembaruan Cache Selesai — 100%", "Versi host baru siap digunakan");
+    }
+})();
+</script>
+</body>
+</html>
