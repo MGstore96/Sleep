@@ -1,12 +1,28 @@
-
 <!DOCTYPE html>
 <html lang="id" manifest="Cache.manifest">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lapse 2.0 PS4 by MGstore</title>
 <link rel="stylesheet" href="apache.css">
+<script>
+function setMsg(htmlContent, type) {
+    var msgsElem = document.getElementById("msgs");
+    if (!msgsElem) return;
+
+    msgsElem.className = "";
+    if (type) {
+        msgsElem.classList.add(type);
+    }
+    msgsElem.innerHTML = htmlContent;
+}
+
+function onScriptError() {
+    setMsg("Konten Tidak Ditemukan! - Hapus Data Browser dan Muat Ulang Cache ...", "error");
+}
+</script>
 </head>
+
 <body>
 <div class="container">
     <div class="logo-container">
@@ -16,7 +32,7 @@
     <div class="header-title">Lapse 2.0 PS4 by MGstore</div>
 
     <div class="status-card">
-        <div id="msgs" class="running">Memeriksa cache offline...</div>
+        <div id="msgs" class="running" role="status" aria-live="polite">Memeriksa cache offline...</div>
         <div id="detail">Menunggu status browser PS4</div>
 
         <div class="progress-container">
@@ -26,43 +42,94 @@
         <div id="percent">0%</div>
         <a id="back" href="index.html">Kembali ke Menu</a>
     </div>
+
+    <div class="thanks-section">
+        <h3>TERIMA KASIH KEPADA:</h3>
+        <div class="credits-list">
+            <span class="credit-item">GamerHack93</span>
+            <span class="credit-item">sleirsgoevy</span>
+            <span class="credit-item">TheFlow</span>
+            <span class="credit-item">Flatz</span>
+            <span class="credit-item">Egycnq</span>
+            <span class="credit-item">Jordy</span>
+            <span class="credit-item">Sonic-Iso</span>
+            <span class="credit-item">Abc</span>
+            <span class="credit-item">Prb29327239</span>
+            <span class="credit-item">Ufm42</span>
+            <span class="credit-item">Feyzee61</span>
+            <span class="credit-item">AlAzif</span>
+            <span class="credit-item">ChendoChap</span>
+            <span class="credit-item">Kameleonre_</span>
+            <span class="credit-item">SiSTR0</span>
+        </div>
+    </div>
 </div>
 
 <footer>
-    <p>&copy; Lapse 2.0 PS4 by MGstore</p>
+    <p>&copy; Lapse 2.0 PS4 by Mgstore</p>
 </footer>
 
-<script>
+<script onerror="onScriptError()">
 (function () {
     "use strict";
 
     var app = window.applicationCache;
     var bar = document.getElementById("pbar");
     var percent = document.getElementById("percent");
-    var msgs = document.getElementById("msgs");
     var detail = document.getElementById("detail");
     var completed = false;
+    var redirected = false;
+    var REDIRECT_DELAY_MS = 800;
 
     function update(value, message, info, type) {
-        value = Math.max(0, Math.min(100, value));
+        var clamped = Math.max(0, Math.min(100, Number(value) || 0));
 
-        bar.style.width = value + "%";
-        percent.textContent = value + "%";
-        msgs.textContent = message;
-        msgs.className = type || "running";
-        detail.textContent = info || "";
+        if (bar) {
+            bar.style.width = clamped + "%";
+        }
+        if (percent) {
+            percent.textContent = clamped + "%";
+        }
+        setMsg(message, type || "running");
+        if (detail) {
+            detail.textContent = info || "";
+        }
+    }
+
+    function goToIndex() {
+        if (redirected) return;
+        redirected = true;
+
+        setTimeout(function () {
+            try {
+                window.location.replace("index.html");
+            } catch (e) {
+                window.location.href = "index.html";
+            }
+        }, REDIRECT_DELAY_MS);
     }
 
     function ready(message, info) {
         if (completed) return;
         completed = true;
 
-        update(100, message, info, "success");
-        detail.textContent += " — Silakan kembali ke menu.";
+        var fullInfo = info ? info + " — Mengalihkan ke menu..." : "Mengalihkan ke menu...";
+        update(100, message, fullInfo, "success");
+        goToIndex();
     }
 
     function fail(message, info) {
+        completed = false;
         update(0, message, info, "error");
+    }
+
+    function trySwapCache() {
+        if (!app || app.status !== app.UPDATEREADY) return;
+        try {
+            app.swapCache();
+        } catch (error) {
+            // Abaikan error swapCache jika status browser belum siap
+        }
     }
 
     if (!app) {
@@ -74,6 +141,7 @@
     }
 
     app.addEventListener("checking", function () {
+        completed = false;
         update(0, "Memeriksa manifest...", "Memeriksa versi cache", "running");
     }, false);
 
@@ -83,14 +151,14 @@
     }, false);
 
     app.addEventListener("progress", function (event) {
-        var total = event.total || 0;
-        var loaded = event.loaded || 0;
-        var value = total ? Math.round(loaded / total * 100) : 0;
+        var total = event && event.total ? event.total : 0;
+        var loaded = event && event.loaded ? event.loaded : 0;
+        var value = total > 0 ? Math.round((loaded / total) * 100) : 0;
 
         update(
             value,
             "Menginstal cache: " + value + "%",
-            loaded + " dari " + total + " berkas",
+            total > 0 ? (loaded + " dari " + total + " berkas") : "Mengunduh berkas...",
             "running"
         );
     }, false);
@@ -110,10 +178,7 @@
     }, false);
 
     app.addEventListener("updateready", function () {
-        try {
-            app.swapCache();
-        } catch (error) {}
-
+        trySwapCache();
         ready(
             "Pembaruan cache selesai!",
             "Versi cache terbaru sudah tersedia."
@@ -143,24 +208,18 @@
 
     if (window.location.search.indexOf("update=1") !== -1) {
         update(0, "Meminta pembaruan cache...", "Mohon tunggu", "running");
-
         try {
             app.update();
         } catch (error) {
-            fail("Gagal memulai pembaruan", error.message);
+            fail("Gagal memulai pembaruan", error && error.message ? error.message : "Terjadi kesalahan.");
         }
     } else if (app.status === app.UPDATEREADY) {
-        try {
-            app.swapCache();
-        } catch (error) {}
-
+        trySwapCache();
         ready("Cache diperbarui!", "Versi terbaru tersedia.");
     } else if (app.status === app.IDLE) {
-        update(
-            100,
+        ready(
             "Cache sudah tersedia",
-            "Browser tidak melaporkan proses unduhan aktif.",
-            "success"
+            "Cache offline siap digunakan."
         );
     } else {
         update(
