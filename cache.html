@@ -9,7 +9,6 @@
 <body>
 
 <div class="container">
-    <!-- Container Logo Tengah Atas -->
     <div class="logo-container">
         <img src="logo.png" alt="Logo MGstore" class="logo">
     </div>
@@ -18,7 +17,7 @@
     <div class="cache-subtitle">OFFLINE CACHE</div>
 
     <div class="status-card">
-        <div id="msgs">Persiapan cache...</div>
+        <div id="msgs">Memeriksa cache...</div>
         <div id="detail"></div>
         <div class="bar"><div id="fill"></div></div>
         <div id="percent">0%</div>
@@ -62,6 +61,7 @@
     var msgs = document.getElementById("msgs");
     var detail = document.getElementById("detail");
     var finished = false;
+    var redirectTimer = null;
 
     function setStateClass(type) {
         msgs.className = "";
@@ -77,76 +77,81 @@
 
     function setProgress(p, msg, info, stateType) {
         p = Math.max(0, Math.min(100, p));
-        fill.style.width = p + "%";
-        percent.textContent = p + "%";
-        msgs.textContent = msg;
-        detail.textContent = info || "";
+        if (fill) fill.style.width = p + "%";
+        if (percent) percent.textContent = p + "%";
+        if (msgs) msgs.textContent = msg;
+        if (detail) detail.textContent = info || "";
         setStateClass(stateType || "");
     }
 
-    function finish(msg, info) {
+    function goIndex(msg, info) {
         if (finished) return;
         finished = true;
-        setProgress(100, msg, info || "Opening Wobkot PS4...", "success");
-        window.setTimeout(function(){ window.location.replace("index.html"); }, 650);
+        setProgress(100, msg, info || "Membuka halaman utama...", "success");
+        if (redirectTimer) clearTimeout(redirectTimer);
+        redirectTimer = window.setTimeout(function(){
+            window.location.replace("index.html");
+        }, 1500);
     }
 
     if (!app) {
-        setProgress(0, "Application Cache unavailable", "This browser does not support the host cache.", "error");
+        setProgress(0, "Application Cache tidak didukung", "Browser tidak mendukung offline cache.", "error");
         return;
     }
 
     app.addEventListener("checking", function(){
-        setProgress(0, "Checking Wobkot PS4 cache...", "Checking the manifest version");
+        setProgress(5, "Memeriksa manifest cache...", "Mengecek pembaruan berkas");
     }, false);
 
     app.addEventListener("downloading", function(){
-        setProgress(0, "Caching Wobkot PS4 files...", "Downloading required host files");
+        setProgress(10, "Mengunduh cache offline...", "Menyimpan berkas ke memori browser");
     }, false);
 
     app.addEventListener("progress", function(e){
         var total = e.total || 0;
         var loaded = e.loaded || 0;
-        var p = total ? Math.floor((loaded / total) * 100) : 0;
-        setProgress(p, "Caching: " + p + "%", loaded + " / " + total + " resources");
+        var p = total ? Math.floor((loaded / total) * 100) : 15;
+        setProgress(p, "Menyimpan cache: " + p + "%", loaded + " / " + total + " berkas", "");
     }, false);
 
     app.addEventListener("cached", function(){
-        finish("Cache complete — 100%", "All Wobkot PS4 files are cached");
+        goIndex("Cache offline selesai — 100%", "Semua berkas sudah tersimpan untuk mode offline");
     }, false);
 
     app.addEventListener("updateready", function(){
         try { app.swapCache(); } catch (e) {}
-        finish("Cache update complete — 100%", "The new host version is ready");
+        goIndex("Pembaruan cache selesai — 100%", "Versi cache terbaru siap digunakan");
     }, false);
 
     app.addEventListener("noupdate", function(){
-        finish("Wobkot PS4 cache is up to date — 100%", "No new version is available");
+        goIndex("Cache sudah terbaru — 100%", "Siap digunakan secara offline");
     }, false);
 
     app.addEventListener("error", function(){
-        if (app.status !== app.UNCACHED) {
-            finish("Using existing Wobkot PS4 cache", "Update unavailable; continuing with the saved version");
+        // Jika sudah ada cache tersimpan (IDLE atau UPDATEREADY), tetap bisa lanjut offline
+        if (app.status === app.IDLE || app.status === app.UPDATEREADY) {
+            goIndex("Menggunakan cache tersimpan — 100%", "Koneksi tidak tersedia; memakai cache lokal");
         } else {
-            setProgress(0, "Cache download failed", "Check the host connection and reload this page", "error");
+            setProgress(0, "Gagal menyimpan cache offline", "Pastikan semua file di Cache.manifest ada (tidak 404) dan header manifest benar", "error");
         }
     }, false);
 
     app.addEventListener("obsolete", function(){
-        setProgress(0, "Cache is obsolete", "Reload the host to create a fresh cache", "error");
+        setProgress(0, "Cache kedaluwarsa (obsolete)", "Muat ulang halaman untuk membuat cache baru", "error");
     }, false);
 
+    // Cek status awal saat halaman dibuka
     if (window.location.search.indexOf("update=1") !== -1) {
-        setProgress(0, "Updating Wobkot PS4 cache...", "Checking for updated files");
+        setProgress(5, "Memperbarui cache...", "Memeriksa berkas terbaru");
         window.setTimeout(function(){
             try { app.update(); }
-            catch (e) { setProgress(0, "Cache update failed", String(e), "error"); }
-        }, 300);
-    } else if (app.status === app.IDLE) {
-        finish("Wobkot PS4 cache is ready — 100%", "Using the saved host files");
+            catch (e) { setProgress(0, "Gagal memperbarui cache", String(e), "error"); }
+        }, 250);
     } else if (app.status === app.UPDATEREADY) {
         try { app.swapCache(); } catch (e) {}
-        finish("Cache update complete — 100%", "The new host version is ready");
+        goIndex("Cache siap — 100%", "Memakai cache terbaru");
+    } else if (app.status === app.IDLE && !navigator.onLine) {
+        goIndex("Mode offline aktif — 100%", "Memuat dari cache lokal");
     }
 })();
 </script>
