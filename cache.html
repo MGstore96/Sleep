@@ -5,47 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lapse 2.0 PS4 by MGstore</title>
 <link rel="stylesheet" href="apache.css">
-<script>
-function setMsg(htmlContent, type) {
-    var msgsElem = document.getElementById("msgs");
-    if (!msgsElem) return;
-
-    msgsElem.className = "";
-    if (type) {
-        msgsElem.classList.add(type);
-    }
-    msgsElem.innerHTML = htmlContent;
-}
-
-function onScriptError() {
-    setMsg("Konten Tidak Ditemukan! - Hapus Data Browser dan Muat Ulang Cache ...", "error");
-}
-</script>
 </head>
-
 <body>
+
 <div class="container">
+    <!-- Container Logo Tengah Atas -->
     <div class="logo-container">
-        <img src="logo.png" alt="Logo Wobkot" class="logo">
+        <img src="logo.png" alt="Logo MGstore" class="logo">
     </div>
 
     <div class="header-title">Lapse 2.0 PS4 by MGstore</div>
+    <div class="cache-subtitle">OFFLINE CACHE</div>
 
     <div class="status-card">
-        <div id="msgs" class="running" role="status" aria-live="polite">Memeriksa cache offline...</div>
-        <div id="detail">Menunggu status browser PS4</div>
-
-        <div class="progress-container">
-            <div id="pbar" class="progress-bar"></div>
-        </div>
-
+        <div id="msgs">Persiapan cache...</div>
+        <div id="detail"></div>
+        <div class="bar"><div id="fill"></div></div>
         <div id="percent">0%</div>
-        <a id="back" href="index.html">Kembali ke Menu</a>
+        <div class="cache-actions">
+            <a id="back" href="index.html">Kembali ke Menu</a>
+        </div>
     </div>
 
     <div class="thanks-section">
         <h3>TERIMA KASIH KEPADA:</h3>
         <div class="credits-list">
+            <span class="credit-item">Karo Sharifi</span>
             <span class="credit-item">GamerHack93</span>
             <span class="credit-item">sleirsgoevy</span>
             <span class="credit-item">TheFlow</span>
@@ -54,8 +39,8 @@ function onScriptError() {
             <span class="credit-item">Jordy</span>
             <span class="credit-item">Sonic-Iso</span>
             <span class="credit-item">Abc</span>
-            <span class="credit-item">Prb29327239</span>
             <span class="credit-item">Ufm42</span>
+            <span class="credit-item">Prb29327239</span>
             <span class="credit-item">Feyzee61</span>
             <span class="credit-item">AlAzif</span>
             <span class="credit-item">ChendoChap</span>
@@ -66,156 +51,102 @@ function onScriptError() {
 </div>
 
 <footer>
-    <p>&copy; Lapse 2.0 PS4 by Mgstore</p>
+    <p>&copy; MGstore Webkit Host</p>
 </footer>
 
-<script onerror="onScriptError()">
-(function () {
-    "use strict";
-
+<script>
+(function(){
     var app = window.applicationCache;
-    var bar = document.getElementById("pbar");
+    var fill = document.getElementById("fill");
     var percent = document.getElementById("percent");
+    var msgs = document.getElementById("msgs");
     var detail = document.getElementById("detail");
-    var completed = false;
-    var redirected = false;
-    var REDIRECT_DELAY_MS = 1200;
+    var finished = false;
 
-    function update(value, message, info, type) {
-        var clamped = Math.max(0, Math.min(100, Number(value) || 0));
-
-        if (bar) {
-            bar.style.width = clamped + "%";
-        }
-        if (percent) {
-            percent.textContent = clamped + "%";
-        }
-        setMsg(message, type || "running");
-        if (detail) {
-            detail.textContent = info || "";
-        }
-    }
-
-    function detachAppCacheListeners() {
-        if (!app) return;
-        var events = ["checking", "downloading", "progress", "cached", "noupdate", "updateready", "error", "obsolete"];
-        for (var i = 0; i < events.length; i++) {
-            try {
-                app.removeEventListener(events[i], onCacheEvent, false);
-            } catch (e) {}
-        }
-    }
-
-    function goToIndex() {
-        if (redirected) return;
-        redirected = true;
-        detachAppCacheListeners();
-
-        setTimeout(function () {
-            try {
-                window.location.replace("index.html");
-            } catch (e) {
-                window.location.href = "index.html";
-            }
-        }, REDIRECT_DELAY_MS);
-    }
-
-    function ready(message, info) {
-        if (completed) return;
-        completed = true;
-
-        var fullInfo = info ? info + " — Mengalihkan ke menu..." : "Mengalihkan ke menu...";
-        update(100, message, fullInfo, "success");
-        goToIndex();
-    }
-
-    function fail(message, info) {
-        completed = false;
-        update(0, message, info, "error");
-    }
-
-    function trySwapCache() {
-        if (!app || app.status !== app.UPDATEREADY) return;
-        try {
-            app.swapCache();
-        } catch (error) {}
-    }
-
-    function onCacheEvent(event) {
-        var type = event && event.type ? event.type : "";
-
-        if (type === "checking") {
-            completed = false;
-            update(0, "Memeriksa manifest...", "Memeriksa versi cache", "running");
-        } else if (type === "downloading") {
-            completed = false;
-            update(0, "Mengunduh cache offline...", "Menyiapkan berkas", "running");
-        } else if (type === "progress") {
-            var total = event && event.total ? event.total : 0;
-            var loaded = event && event.loaded ? event.loaded : 0;
-            var value = total > 0 ? Math.round((loaded / total) * 100) : 0;
-            update(
-                value,
-                "Menginstal cache: " + value + "%",
-                total > 0 ? (loaded + " dari " + total + " berkas") : "Mengunduh berkas...",
-                "running"
-            );
-        } else if (type === "cached") {
-            ready("Cache berhasil disimpan!", "Berkas manifest sudah diunduh.");
-        } else if (type === "noupdate") {
-            ready("Cache sudah terbaru!", "Tidak ada pembaruan yang diperlukan.");
-        } else if (type === "updateready") {
-            trySwapCache();
-            ready("Pembaruan cache selesai!", "Versi cache terbaru sudah tersedia.");
+    function setStateClass(type) {
+        msgs.className = "";
+        fill.className = "";
+        if (type === "success") {
+            msgs.classList.add("success");
+            fill.classList.add("done");
         } else if (type === "error") {
-            if (app.status !== app.UNCACHED) {
-                fail(
-                    "Pembaruan cache gagal",
-                    "Cache lama mungkin masih tersedia. Periksa koneksi dan manifest."
-                );
-            } else {
-                fail(
-                    "Gagal memasang cache offline",
-                    "Periksa Cache.manifest, nama file, dan koneksi host."
-                );
-            }
-        } else if (type === "obsolete") {
-            fail("Manifest cache tidak berlaku", "Periksa kembali konfigurasi server.");
+            msgs.classList.add("error");
+            fill.classList.add("fail");
         }
+    }
+
+    function setProgress(p, msg, info, stateType) {
+        p = Math.max(0, Math.min(100, p));
+        fill.style.width = p + "%";
+        percent.textContent = p + "%";
+        msgs.textContent = msg;
+        detail.textContent = info || "";
+        setStateClass(stateType || "");
+    }
+
+    function finish(msg, info) {
+        if (finished) return;
+        finished = true;
+        setProgress(100, msg, info || "Opening Wobkot PS4...", "success");
+        window.setTimeout(function(){ window.location.replace("index.html"); }, 650);
     }
 
     if (!app) {
-        fail(
-            "Cache offline tidak didukung",
-            "Browser ini tidak menyediakan Application Cache."
-        );
+        setProgress(0, "Application Cache unavailable", "This browser does not support the host cache.", "error");
         return;
     }
 
-    var allEvents = ["checking", "downloading", "progress", "cached", "noupdate", "updateready", "error", "obsolete"];
-    for (var i = 0; i < allEvents.length; i++) {
-        app.addEventListener(allEvents[i], onCacheEvent, false);
-    }
+    app.addEventListener("checking", function(){
+        setProgress(0, "Checking Wobkot PS4 cache...", "Checking the manifest version");
+    }, false);
+
+    app.addEventListener("downloading", function(){
+        setProgress(0, "Caching Wobkot PS4 files...", "Downloading required host files");
+    }, false);
+
+    app.addEventListener("progress", function(e){
+        var total = e.total || 0;
+        var loaded = e.loaded || 0;
+        var p = total ? Math.floor((loaded / total) * 100) : 0;
+        setProgress(p, "Caching: " + p + "%", loaded + " / " + total + " resources");
+    }, false);
+
+    app.addEventListener("cached", function(){
+        finish("Cache complete — 100%", "All Wobkot PS4 files are cached");
+    }, false);
+
+    app.addEventListener("updateready", function(){
+        try { app.swapCache(); } catch (e) {}
+        finish("Cache update complete — 100%", "The new host version is ready");
+    }, false);
+
+    app.addEventListener("noupdate", function(){
+        finish("Wobkot PS4 cache is up to date — 100%", "No new version is available");
+    }, false);
+
+    app.addEventListener("error", function(){
+        if (app.status !== app.UNCACHED) {
+            finish("Using existing Wobkot PS4 cache", "Update unavailable; continuing with the saved version");
+        } else {
+            setProgress(0, "Cache download failed", "Check the host connection and reload this page", "error");
+        }
+    }, false);
+
+    app.addEventListener("obsolete", function(){
+        setProgress(0, "Cache is obsolete", "Reload the host to create a fresh cache", "error");
+    }, false);
 
     if (window.location.search.indexOf("update=1") !== -1) {
-        update(0, "Meminta pembaruan cache...", "Mohon tunggu", "running");
-        try {
-            app.update();
-        } catch (error) {
-            fail("Gagal memulai pembaruan", error && error.message ? error.message : "Terjadi kesalahan.");
-        }
-    } else if (app.status === app.UPDATEREADY) {
-        trySwapCache();
-        ready("Cache diperbarui!", "Versi terbaru tersedia.");
+        setProgress(0, "Updating Wobkot PS4 cache...", "Checking for updated files");
+        window.setTimeout(function(){
+            try { app.update(); }
+            catch (e) { setProgress(0, "Cache update failed", String(e), "error"); }
+        }, 300);
     } else if (app.status === app.IDLE) {
-        ready("Cache sudah tersedia", "Cache offline siap digunakan.");
-    } else {
-        update(
-            0,
-            "Menunggu proses cache...",
-            "Jangan tutup halaman sampai proses selesai.",
-            "running"
-        );
+        finish("Wobkot PS4 cache is ready — 100%", "Using the saved host files");
+    } else if (app.status === app.UPDATEREADY) {
+        try { app.swapCache(); } catch (e) {}
+        finish("Cache update complete — 100%", "The new host version is ready");
     }
 })();
 </script>
