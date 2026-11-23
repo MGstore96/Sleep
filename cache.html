@@ -1,157 +1,171 @@
-<!DOCTYPE html>
-<html lang="id" manifest="Cache.manifest">
+<html lang="en" manifest="Cache.manifest">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lapse 2.0 PS4 by MGstore</title>
-<link rel="stylesheet" href="apache.css">
+<style>
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    background:#111;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    overflow:hidden;
+}
+body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+#cache-box{
+    width:min(760px,88vw);
+    text-align:center;
+}
+h1{
+    margin:0 0 8px;
+    font-size:clamp(20px,5vw,30px);
+    font-weight:800;
+}
+#subtitle{
+    margin:0 0 28px;
+    color:#8f9198;
+    font-weight:700;
+}
+#status{
+    font-size:1.15rem;
+    font-weight:800;
+    margin-bottom:10px;
+}
+#detail{
+    min-height:20px;
+    color:#6f7076;
+    font-size:.9rem;
+}
+.bar{
+    width:100%;
+    height:18px;
+    margin-top:22px;
+    background:#242529;
+    border:1px solid #3b3c42;
+    border-radius:999px;
+    overflow:hidden;
+}
+#fill{
+    width:0%;
+    height:100%;
+    background:#2f78c4;
+    transition:width .15s linear;
+}
+#percent{
+    margin-top:10px;
+    color:#9bbfe3;
+    font-weight:800;
+}
+#back{
+    margin-top:28px;
+    display:inline-block;
+    padding:12px 22px;
+    border-radius:10px;
+    border:1px solid #3c78ad;
+    background:#1c3852;
+    color:#fff;
+    font-weight:800;
+    text-decoration:none;
+}
+</style>
 </head>
 <body>
-
-<div class="container">
-    <div class="logo-container">
-        <img src="logo.png" alt="Logo MGstore" class="logo">
-    </div>
-
-    <div class="header-title">Lapse 2.0 PS4 by MGstore</div>
-    <div class="cache-subtitle">OFFLINE CACHE</div>
-
-    <div class="status-card">
-        <div id="msgs">Memeriksa cache...</div>
-        <div id="detail"></div>
-        <div class="bar"><div id="fill"></div></div>
-        <div id="percent">0%</div>
-        <div class="cache-actions">
-            <a id="back" href="index.html">Kembali ke Menu</a>
-        </div>
-    </div>
-
-    <div class="thanks-section">
-        <h3>TERIMA KASIH KEPADA:</h3>
-        <div class="credits-list">
-            <span class="credit-item">Karo Sharifi</span>
-            <span class="credit-item">GamerHack93</span>
-            <span class="credit-item">sleirsgoevy</span>
-            <span class="credit-item">TheFlow</span>
-            <span class="credit-item">Flatz</span>
-            <span class="credit-item">Egycnq</span>
-            <span class="credit-item">Jordy</span>
-            <span class="credit-item">Sonic-Iso</span>
-            <span class="credit-item">Abc</span>
-            <span class="credit-item">Ufm42</span>
-            <span class="credit-item">Prb29327239</span>
-            <span class="credit-item">Feyzee61</span>
-            <span class="credit-item">AlAzif</span>
-            <span class="credit-item">ChendoChap</span>
-            <span class="credit-item">Kameleonre_</span>
-            <span class="credit-item">SiSTR0</span>
-        </div>
-    </div>
+<div id="cache-box">
+    <h1>Lapse 2.0 PS4 by MGstore</h1>
+    <p id="subtitle">Cache</p>
+    <div id="status">Preparing cache...</div>
+    <div id="detail"></div>
+    <div class="bar"><div id="fill"></div></div>
+    <div id="percent">0%</div>
+    <a id="back" href="index.html">Back to Menu</a>
 </div>
-
-<footer>
-    <p>&copy; MGstore Webkit Host</p>
-</footer>
 
 <script>
 (function(){
     var app = window.applicationCache;
     var fill = document.getElementById("fill");
     var percent = document.getElementById("percent");
-    var msgs = document.getElementById("msgs");
+    var status = document.getElementById("status");
     var detail = document.getElementById("detail");
     var finished = false;
-    var redirectTimer = null;
 
-    function setStateClass(type) {
-        msgs.className = "";
-        fill.className = "";
-        if (type === "success") {
-            msgs.classList.add("success");
-            fill.classList.add("done");
-        } else if (type === "error") {
-            msgs.classList.add("error");
-            fill.classList.add("fail");
-        }
-    }
-
-    function setProgress(p, msg, info, stateType) {
+    function setProgress(p, msg, info) {
         p = Math.max(0, Math.min(100, p));
-        if (fill) fill.style.width = p + "%";
-        if (percent) percent.textContent = p + "%";
-        if (msgs) msgs.textContent = msg;
-        if (detail) detail.textContent = info || "";
-        setStateClass(stateType || "");
+        fill.style.width = p + "%";
+        percent.textContent = p + "%";
+        status.textContent = msg;
+        detail.textContent = info || "";
     }
 
-    function goIndex(msg, info) {
+    function finish(msg, info) {
         if (finished) return;
         finished = true;
-        setProgress(100, msg, info || "Membuka halaman utama...", "success");
-        if (redirectTimer) clearTimeout(redirectTimer);
-        redirectTimer = window.setTimeout(function(){
-            window.location.replace("index.html");
-        }, 500);
+        setProgress(100, msg, info || "Opening Wobkot PS4...");
+        window.setTimeout(function(){ window.location.replace("index.html"); }, 650);
     }
 
     if (!app) {
-        setProgress(0, "Application Cache tidak didukung", "Browser tidak mendukung offline cache.", "error");
+        setProgress(0, "Application Cache unavailable", "This browser does not support the host cache.");
         return;
     }
 
     app.addEventListener("checking", function(){
-        setProgress(5, "Memeriksa manifest cache...", "Mengecek pembaruan berkas");
+        setProgress(0, "Checking Wobkot PS4 cache...", "Checking the manifest version");
     }, false);
 
     app.addEventListener("downloading", function(){
-        setProgress(10, "Mengunduh cache offline...", "Menyimpan berkas ke memori browser");
+        setProgress(0, "Caching Wobkot PS4 files...", "Downloading required host files");
     }, false);
 
     app.addEventListener("progress", function(e){
         var total = e.total || 0;
         var loaded = e.loaded || 0;
-        var p = total ? Math.floor((loaded / total) * 100) : 15;
-        setProgress(p, "Menyimpan cache: " + p + "%", loaded + " / " + total + " berkas", "");
+        var p = total ? Math.floor((loaded / total) * 100) : 0;
+        setProgress(p, "Caching: " + p + "%", loaded + " / " + total + " resources");
     }, false);
 
     app.addEventListener("cached", function(){
-        goIndex("Cache offline selesai — 100%", "Semua berkas sudah tersimpan untuk mode offline");
+        finish("Cache complete — 100%", "All Wobkot PS4 files are cached");
     }, false);
 
     app.addEventListener("updateready", function(){
         try { app.swapCache(); } catch (e) {}
-        goIndex("Pembaruan cache selesai — 100%", "Versi cache terbaru siap digunakan");
+        finish("Cache update complete — 100%", "The new host version is ready");
     }, false);
 
     app.addEventListener("noupdate", function(){
-        goIndex("Cache sudah terbaru — 100%", "Siap digunakan secara offline");
+        finish("Wobkot PS4 cache is up to date — 100%", "No new version is available");
     }, false);
 
     app.addEventListener("error", function(){
-        // Jika sudah ada cache tersimpan (IDLE atau UPDATEREADY), tetap bisa lanjut offline
-        if (app.status === app.IDLE || app.status === app.UPDATEREADY) {
-            goIndex("Menggunakan cache tersimpan — 100%", "Koneksi tidak tersedia; memakai cache lokal");
+        if (app.status !== app.UNCACHED) {
+            finish("Using existing Wobkot PS4 cache", "Update unavailable; continuing with the saved version");
         } else {
-            setProgress(0, "Gagal menyimpan cache offline", "Pastikan semua file di Cache.manifest ada (tidak 404) dan header manifest benar", "error");
+            setProgress(0, "Cache download failed", "Check the host connection and reload this page");
         }
     }, false);
 
     app.addEventListener("obsolete", function(){
-        setProgress(0, "Cache kedaluwarsa (obsolete)", "Muat ulang halaman untuk membuat cache baru", "error");
+        setProgress(0, "Cache is obsolete", "Reload the host to create a fresh cache");
     }, false);
 
-    // Cek status awal saat halaman dibuka
     if (window.location.search.indexOf("update=1") !== -1) {
-        setProgress(5, "Memperbarui cache...", "Memeriksa berkas terbaru");
+        setProgress(0, "Updating Wobkot PS4 cache...", "Checking for updated files");
         window.setTimeout(function(){
             try { app.update(); }
-            catch (e) { setProgress(0, "Gagal memperbarui cache", String(e), "error"); }
-        }, 250);
+            catch (e) { setProgress(0, "Cache update failed", String(e)); }
+        }, 300);
+    } else if (app.status === app.IDLE) {
+        finish("Wobkot PS4 cache is ready — 100%", "Using the saved host files");
     } else if (app.status === app.UPDATEREADY) {
         try { app.swapCache(); } catch (e) {}
-        goIndex("Cache siap — 100%", "Memakai cache terbaru");
-    } else if (app.status === app.IDLE && !navigator.onLine) {
-        goIndex("Mode offline aktif — 100%", "Memuat dari cache lokal");
+        finish("Cache update complete — 100%", "The new host version is ready");
     }
 })();
 </script>
