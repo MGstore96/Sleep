@@ -26,6 +26,20 @@ function setMsg(htmlContent, type) {
 function onScriptError() {
     setMsg("Konten Tidak Ditemukan! - Hapus Data Browser dan Muat Ulang Cache ...", "error");
 }
+
+function loadMainScript() {
+    var script = document.createElement("script");
+    script.src = "src/main.js";
+    script.onerror = onScriptError;
+    document.body.appendChild(script);
+}
+
+window.addEventListener("DOMContentLoaded", function () {
+    var fromCachePage = document.referrer && document.referrer.indexOf("cache.html") !== -1;
+    var delay = fromCachePage ? 400 : 0;
+
+    setTimeout(loadMainScript, delay);
+}, false);
 </script>
 </head>
 
@@ -68,7 +82,7 @@ function onScriptError() {
             <span class="credit-item">Jordy</span>
             <span class="credit-item">Sonic-Iso</span>
             <span class="credit-item">Abc</span>
-            <span class="credit-item">Prb29327239</span>            
+            <span class="credit-item">Prb29327239</span>
             <span class="credit-item">Ufm42</span>
             <span class="credit-item">Feyzee61</span>
             <span class="credit-item">AlAzif</span>
@@ -85,7 +99,5 @@ function onScriptError() {
 <footer>
     <p>&copy; Lapse 2.0 PS4 by Mgstore</p>
 </footer>
-
-<script src="src/main.js" defer></script>
 </body>
 </html>
