@@ -79,7 +79,7 @@ function onScriptError() {
     var detail = document.getElementById("detail");
     var completed = false;
     var redirected = false;
-    var REDIRECT_DELAY_MS = 800;
+    var REDIRECT_DELAY_MS = 1200;
 
     function update(value, message, info, type) {
         var clamped = Math.max(0, Math.min(100, Number(value) || 0));
@@ -96,9 +96,20 @@ function onScriptError() {
         }
     }
 
+    function detachAppCacheListeners() {
+        if (!app) return;
+        var events = ["checking", "downloading", "progress", "cached", "noupdate", "updateready", "error", "obsolete"];
+        for (var i = 0; i < events.length; i++) {
+            try {
+                app.removeEventListener(events[i], onCacheEvent, false);
+            } catch (e) {}
+        }
+    }
+
     function goToIndex() {
         if (redirected) return;
         redirected = true;
+        detachAppCacheListeners();
 
         setTimeout(function () {
             try {
@@ -127,8 +138,49 @@ function onScriptError() {
         if (!app || app.status !== app.UPDATEREADY) return;
         try {
             app.swapCache();
-        } catch (error) {
-            // Abaikan error swapCache jika status browser belum siap
+        } catch (error) {}
+    }
+
+    function onCacheEvent(event) {
+        var type = event && event.type ? event.type : "";
+
+        if (type === "checking") {
+            completed = false;
+            update(0, "Memeriksa manifest...", "Memeriksa versi cache", "running");
+        } else if (type === "downloading") {
+            completed = false;
+            update(0, "Mengunduh cache offline...", "Menyiapkan berkas", "running");
+        } else if (type === "progress") {
+            var total = event && event.total ? event.total : 0;
+            var loaded = event && event.loaded ? event.loaded : 0;
+            var value = total > 0 ? Math.round((loaded / total) * 100) : 0;
+            update(
+                value,
+                "Menginstal cache: " + value + "%",
+                total > 0 ? (loaded + " dari " + total + " berkas") : "Mengunduh berkas...",
+                "running"
+            );
+        } else if (type === "cached") {
+            ready("Cache berhasil disimpan!", "Berkas manifest sudah diunduh.");
+        } else if (type === "noupdate") {
+            ready("Cache sudah terbaru!", "Tidak ada pembaruan yang diperlukan.");
+        } else if (type === "updateready") {
+            trySwapCache();
+            ready("Pembaruan cache selesai!", "Versi cache terbaru sudah tersedia.");
+        } else if (type === "error") {
+            if (app.status !== app.UNCACHED) {
+                fail(
+                    "Pembaruan cache gagal",
+                    "Cache lama mungkin masih tersedia. Periksa koneksi dan manifest."
+                );
+            } else {
+                fail(
+                    "Gagal memasang cache offline",
+                    "Periksa Cache.manifest, nama file, dan koneksi host."
+                );
+            }
+        } else if (type === "obsolete") {
+            fail("Manifest cache tidak berlaku", "Periksa kembali konfigurasi server.");
         }
     }
 
@@ -140,71 +192,10 @@ function onScriptError() {
         return;
     }
 
-    app.addEventListener("checking", function () {
-        completed = false;
-        update(0, "Memeriksa manifest...", "Memeriksa versi cache", "running");
-    }, false);
-
-    app.addEventListener("downloading", function () {
-        completed = false;
-        update(0, "Mengunduh cache offline...", "Menyiapkan berkas", "running");
-    }, false);
-
-    app.addEventListener("progress", function (event) {
-        var total = event && event.total ? event.total : 0;
-        var loaded = event && event.loaded ? event.loaded : 0;
-        var value = total > 0 ? Math.round((loaded / total) * 100) : 0;
-
-        update(
-            value,
-            "Menginstal cache: " + value + "%",
-            total > 0 ? (loaded + " dari " + total + " berkas") : "Mengunduh berkas...",
-            "running"
-        );
-    }, false);
-
-    app.addEventListener("cached", function () {
-        ready(
-            "Cache berhasil disimpan!",
-            "Berkas manifest sudah diunduh."
-        );
-    }, false);
-
-    app.addEventListener("noupdate", function () {
-        ready(
-            "Cache sudah terbaru!",
-            "Tidak ada pembaruan yang diperlukan."
-        );
-    }, false);
-
-    app.addEventListener("updateready", function () {
-        trySwapCache();
-        ready(
-            "Pembaruan cache selesai!",
-            "Versi cache terbaru sudah tersedia."
-        );
-    }, false);
-
-    app.addEventListener("error", function () {
-        if (app.status !== app.UNCACHED) {
-            fail(
-                "Pembaruan cache gagal",
-                "Cache lama mungkin masih tersedia. Periksa koneksi dan manifest."
-            );
-        } else {
-            fail(
-                "Gagal memasang cache offline",
-                "Periksa Cache.manifest, nama file, dan koneksi host."
-            );
-        }
-    }, false);
-
-    app.addEventListener("obsolete", function () {
-        fail(
-            "Manifest cache tidak berlaku",
-            "Periksa kembali konfigurasi server."
-        );
-    }, false);
+    var allEvents = ["checking", "downloading", "progress", "cached", "noupdate", "updateready", "error", "obsolete"];
+    for (var i = 0; i < allEvents.length; i++) {
+        app.addEventListener(allEvents[i], onCacheEvent, false);
+    }
 
     if (window.location.search.indexOf("update=1") !== -1) {
         update(0, "Meminta pembaruan cache...", "Mohon tunggu", "running");
@@ -217,10 +208,7 @@ function onScriptError() {
         trySwapCache();
         ready("Cache diperbarui!", "Versi terbaru tersedia.");
     } else if (app.status === app.IDLE) {
-        ready(
-            "Cache sudah tersedia",
-            "Cache offline siap digunakan."
-        );
+        ready("Cache sudah tersedia", "Cache offline siap digunakan.");
     } else {
         update(
             0,
