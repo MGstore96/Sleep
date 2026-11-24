@@ -40,7 +40,6 @@
     padding: 1.5rem;
   }
 
-  /* Grid halus ala HUD konsol */
   body::before {
     content: "";
     position: fixed;
@@ -53,7 +52,6 @@
     z-index: 0;
   }
 
-  /* Kartu Cache Utama */
   #cache-box {
     position: relative;
     z-index: 2;
@@ -62,15 +60,17 @@
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 22px;
-    padding: 2.25rem 2rem;
+    padding: 2rem;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     box-shadow:
       0 25px 50px -12px rgba(0, 0, 0, 0.72),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  /* Garis aksen neon di bagian atas kartu */
   #cache-box::before {
     content: "";
     position: absolute;
@@ -81,11 +81,23 @@
     background: linear-gradient(90deg, transparent, var(--ps-cyan), var(--ps-blue), transparent);
   }
 
+  /* Styling Logo MG Store */
+  .brand-logo {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    object-fit: cover;
+    padding: 4px;
+    background: linear-gradient(135deg, var(--ps-cyan), var(--ps-blue));
+    box-shadow: 0 0 25px rgba(0, 210, 255, 0.45), 0 8px 20px rgba(0, 0, 0, 0.6);
+    margin-bottom: 0.9rem;
+  }
+
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 5px 14px;
+    padding: 4px 14px;
     border-radius: 999px;
     background: rgba(0, 112, 209, 0.18);
     border: 1px solid rgba(0, 210, 255, 0.35);
@@ -94,7 +106,7 @@
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.65rem;
     box-shadow: 0 0 20px rgba(0, 112, 209, 0.25);
   }
 
@@ -108,8 +120,8 @@
   }
 
   h1 {
-    margin: 0 0 6px;
-    font-size: clamp(1.75rem, 4.5vw, 2.55rem);
+    margin: 0 0 4px;
+    font-size: clamp(1.7rem, 4.5vw, 2.45rem);
     font-weight: 800;
     letter-spacing: -0.5px;
     background: linear-gradient(135deg, #ffffff 30%, #7dd3fc 100%);
@@ -118,9 +130,9 @@
   }
 
   #subtitle {
-    margin: 0 0 28px;
+    margin: 0 0 22px;
     color: var(--text-muted);
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     font-weight: 700;
     letter-spacing: 1.2px;
     text-transform: uppercase;
@@ -130,7 +142,7 @@
     font-size: 1.15rem;
     font-weight: 700;
     color: #e0f2fe;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   #detail {
@@ -140,11 +152,10 @@
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   }
 
-  /* Progress Bar Modern */
   .bar {
     width: 100%;
     height: 20px;
-    margin-top: 22px;
+    margin-top: 18px;
     padding: 2px;
     background: rgba(6, 10, 20, 0.78);
     border: 1px solid rgba(0, 210, 255, 0.22);
@@ -163,7 +174,7 @@
   }
 
   #percent {
-    margin-top: 12px;
+    margin-top: 10px;
     color: var(--ps-cyan);
     font-size: 1.05rem;
     font-weight: 800;
@@ -171,11 +182,10 @@
     letter-spacing: 0.5px;
   }
 
-  /* Tombol Kembali */
   #back {
-    margin-top: 26px;
+    margin-top: 22px;
     display: inline-block;
-    padding: 12px 24px;
+    padding: 11px 24px;
     border-radius: 10px;
     border: 1px solid rgba(0, 210, 255, 0.35);
     background: rgba(0, 112, 209, 0.22);
@@ -194,12 +204,11 @@
     transform: translateY(-1px);
   }
 
-  /* Simbol PlayStation Dekoratif */
   .ps-symbols {
     display: flex;
     justify-content: center;
     gap: 1.5rem;
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
     color: rgba(148, 163, 184, 0.35);
     font-size: 0.95rem;
     user-select: none;
@@ -213,6 +222,7 @@
 </head>
 <body>
 <div id="cache-box">
+    <img src="logo.png" alt="MG Store Logo" class="brand-logo">
     <div class="badge"><span class="dot"></span> Offline Cache Manager</div>
     <h1>Lapse 2.0 PS4 by MGstore</h1>
     <p id="subtitle">Cache</p>
