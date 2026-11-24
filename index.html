@@ -43,7 +43,6 @@
     overflow: hidden;
   }
 
-  /* Grid halus ala HUD konsol */
   body::before {
     content: "";
     position: fixed;
@@ -56,14 +55,13 @@
     z-index: 0;
   }
 
-  /* Layout Utama */
   body.quiet {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
-    padding: 2rem;
+    padding: 1.5rem;
     position: relative;
   }
 
@@ -72,23 +70,39 @@
     position: relative;
     z-index: 2;
     text-align: center;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Styling Logo MG Store */
+  .brand-logo {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    padding: 4px;
+    background: linear-gradient(135deg, var(--ps-cyan), var(--ps-blue));
+    box-shadow: 0 0 25px rgba(0, 210, 255, 0.45), 0 8px 20px rgba(0, 0, 0, 0.6);
+    margin-bottom: 0.9rem;
+    transition: transform 0.3s ease;
   }
 
   #Header .badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 5px 14px;
+    padding: 4px 14px;
     border-radius: 999px;
     background: rgba(0, 112, 209, 0.18);
     border: 1px solid rgba(0, 210, 255, 0.35);
     color: var(--ps-cyan);
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
     box-shadow: 0 0 20px rgba(0, 112, 209, 0.25);
   }
 
@@ -102,7 +116,7 @@
   }
 
   #Header h1 {
-    font-size: clamp(1.85rem, 4vw, 2.75rem);
+    font-size: clamp(1.75rem, 4vw, 2.55rem);
     font-weight: 800;
     letter-spacing: -0.5px;
     background: linear-gradient(135deg, #ffffff 30%, #7dd3fc 100%);
@@ -113,8 +127,8 @@
 
   #Header .subtitle {
     color: var(--text-muted);
-    font-size: 0.95rem;
-    margin-top: 0.35rem;
+    font-size: 0.92rem;
+    margin-top: 0.25rem;
   }
 
   /* Kartu Status Utama */
@@ -126,7 +140,7 @@
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 20px;
-    padding: 2.25rem 2rem;
+    padding: 2rem;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     box-shadow: 
@@ -134,7 +148,6 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
-  /* Garis aksen neon di atas kartu */
   #main-content::before {
     content: "";
     position: absolute;
@@ -149,13 +162,12 @@
     display: none;
   }
 
-  /* Live Log Status Box (Pusat perhatian di layar PS4) */
   #liveLog {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 64px;
+    min-height: 62px;
     padding: 1rem 1.5rem;
     border-radius: 12px;
     background: rgba(6, 10, 20, 0.65);
@@ -172,7 +184,6 @@
     text-overflow: ellipsis;
   }
 
-  /* Progress shimmer bar di bawah liveLog */
   .progress-track {
     width: 100%;
     height: 4px;
@@ -195,7 +206,6 @@
     animation: loadingSweep 2s infinite ease-in-out;
   }
 
-  /* Stage Styling (jika ditampilkan non-quiet) */
   #stage {
     font-size: 1.25rem;
     font-weight: 600;
@@ -230,7 +240,6 @@
     display: none !important;
   }
 
-  /* Navigasi / Tombol jika diperlukan */
   #nav a {
     display: inline-block;
     margin: 0 10px 8px 0;
@@ -258,21 +267,19 @@
     color: var(--warn-color);
   }
 
-  /* Ikon Simbol PlayStation Dekoratif */
   .ps-symbols {
     display: flex;
     justify-content: center;
     gap: 1.5rem;
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
     color: rgba(148, 163, 184, 0.35);
     font-size: 0.95rem;
     user-select: none;
   }
 
-  /* Footer */
   footer {
     position: fixed;
-    bottom: 16px;
+    bottom: 14px;
     left: 0;
     right: 0;
     text-align: center;
@@ -287,7 +294,6 @@
     font-weight: 600;
   }
 
-  /* Animasi */
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.4; transform: scale(0.85); }
@@ -303,6 +309,7 @@
 <body class="quiet">
 
   <div id="Header">
+    <img src="logo.png" alt="MG Store Logo" class="brand-logo">
     <div class="badge"><span class="dot"></span> PS4 WebKit Exploit</div>
     <h1>Lapse 2.0 PS4 by MGstore</h1>
     <p class="subtitle">Menyiapkan environment &amp; menjalankan payload secara otomatis</p>
