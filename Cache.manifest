@@ -4,7 +4,6 @@ CACHE MANIFEST
 CACHE:
 index.html
 cache.html
-apache.css
 logo.png
 src/main.js
 src/misc.js
