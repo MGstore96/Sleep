@@ -1,9 +1,10 @@
 CACHE MANIFEST
-# Wobkot PS4 Host cache build 2026-11-21-02
+# v1.0
 
 CACHE:
 index.html
 cache.html
+style.css
 logo.png
 src/main.js
 src/misc.js
