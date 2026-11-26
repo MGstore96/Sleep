@@ -37,7 +37,7 @@
     <img src="logo.png" alt="MG Store Logo" class="brand-logo">
     <div class="badge">PS4 WEBKIT EXPLOIT</div>
     <h1>Lapse 2.0 PS4 by MGstore</h1>
-    <p class="subtitle">12.00</p>
+    <p class="subtitle">Menyiapkan environment &amp; menjalankan payload secara otomatis</p>
   </div>
 
   <div id="main-content">
@@ -62,9 +62,9 @@
       <div id="summary"></div>
     </div>
 
-    <div id="statusLabel" class="status-label">Proses Exploit Berjalan</div>
+    <div class="status-label"></div>
 
-    <div id="progressTrack" class="progress-track">
+    <div class="progress-track">
       <div class="progress-bar"></div>
     </div>
 
@@ -85,72 +85,6 @@
   <pre id="scr" aria-label="Host log" hidden></pre>
   <div id="console" hidden></div>
   <script src="src/main.js" defer></script>
-
-  <script>
-    (function() {
-      var statusLabel = document.getElementById("statusLabel");
-      var progressTrack = document.getElementById("progressTrack");
-      var liveLog = document.getElementById("liveLog");
-      var stage = document.getElementById("stage");
-      var scr = document.getElementById("scr");
-      var loaded = false;
-
-      // Kata kunci umum saat exploit / payload GoldHEN berhasil dimuat
-      var successPatterns = [
-        /goldhen/i,
-        /payload.*(sent|loaded|done|ok|success)/i,
-        /(jailbreak|exploit).*(success|done|complete|ready)/i,
-        /---selesai---/i,
-        /bin\s*loader.*ready/i
-      ];
-
-      function markGoldhenLoaded() {
-        if (loaded || !statusLabel) return;
-        loaded = true;
-        statusLabel.textContent = "Goldhen berhasil di muat";
-        statusLabel.classList.add("is-loaded");
-        if (progressTrack) {
-          progressTrack.classList.add("is-done");
-        }
-      }
-
-      function checkSources() {
-        if (loaded) return;
-        var combinedText = [
-          liveLog ? liveLog.textContent : "",
-          stage ? stage.textContent : "",
-          scr ? scr.textContent : ""
-        ].join(" ");
-
-        for (var i = 0; i < successPatterns.length; i++) {
-          if (successPatterns[i].test(combinedText)) {
-            markGoldhenLoaded();
-            break;
-          }
-        }
-      }
-
-      if (window.MutationObserver) {
-        var observer = new MutationObserver(checkSources);
-        [liveLog, stage, scr].forEach(function(el) {
-          if (el) {
-            observer.observe(el, {
-              childList: true,
-              characterData: true,
-              subtree: true
-            });
-          }
-        });
-      }
-
-      var timer = window.setInterval(function() {
-        checkSources();
-        if (loaded) {
-          window.clearInterval(timer);
-        }
-      }, 400);
-    })();
-  </script>
 
 </body>
 </html>
