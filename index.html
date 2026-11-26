@@ -35,7 +35,7 @@
 
   <div id="Header">
     <img src="logo.png" alt="MG Store Logo" class="brand-logo">
-    <div class="badge">PS4 WEBKIT EXPLOIT</div>
+    <div class="badge"><span class="dot"></span> PS4 WebKit Exploit</div>
     <h1>Lapse 2.0 PS4 by MGstore</h1>
     <p class="subtitle">Menyiapkan environment &amp; menjalankan payload secara otomatis</p>
   </div>
@@ -62,7 +62,7 @@
       <div id="summary"></div>
     </div>
 
-    <div class="status-label">Proses Exploit Berjalan</div>
+    <div id="liveLog" role="status" aria-live="polite">Starting WebKit...</div>
 
     <div class="progress-track">
       <div class="progress-bar"></div>
@@ -76,10 +76,8 @@
     </div>
   </div>
 
-  <div id="liveLog" role="status" aria-live="polite" hidden>Starting WebKit...</div>
-
   <footer>
-    Powered by <span>MGstore</span> &bull; Jangan tutup browser selama proses berlangsung
+   <p> Powered by <span>MGstore</span> </p>
   </footer>
 
   <pre id="scr" aria-label="Host log" hidden></pre>
