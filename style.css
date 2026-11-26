@@ -341,23 +341,21 @@ body.quiet td.d .ev {
 }
 
 footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 8px 12px;
-  text-align: center;
-  background: rgba(6, 9, 19, 0.88);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  z-index: 3;
-}
+    position: fixed;
+    bottom: 14px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    z-index: 2;
+    letter-spacing: 0.3px;
+  }
 
-footer span {
-  color: var(--ps-cyan);
-  font-weight: 600;
-}
+  footer span {
+    color: var(--ps-cyan);
+    font-weight: 600;
+  }
 
 @media (max-height: 620px) {
   body.quiet,
