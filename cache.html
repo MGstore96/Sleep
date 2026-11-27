@@ -34,8 +34,16 @@
     var detail = document.getElementById("detail");
     var backBtn = document.getElementById("back");
     var finished = false;
+    var redirected = false;
 
-    function goSameTab() {
+    function goIndexOnly() {
+        if (redirected) return;
+        redirected = true;
+        try {
+            if (window.history && typeof window.history.replaceState === "function") {
+                window.history.replaceState(null, "", "index.html");
+            }
+        } catch (e) {}
         try {
             window.location.replace("index.html");
         } catch (e) {
@@ -44,9 +52,10 @@
     }
 
     if (backBtn) {
+        backBtn.setAttribute("target", "_self");
         backBtn.addEventListener("click", function(ev){
             ev.preventDefault();
-            goSameTab();
+            goIndexOnly();
         });
     }
 
@@ -61,8 +70,8 @@
     function finish(msg, info) {
         if (finished) return;
         finished = true;
-        setProgress(100, msg, info || "Opening Lapse 2.0 PS4...");
-        window.setTimeout(goSameTab, 150);
+        setProgress(100, msg, info || "Opening index.html...");
+        window.setTimeout(goIndexOnly, 150);
     }
 
     if (!app) {
