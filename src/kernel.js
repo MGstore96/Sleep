@@ -671,7 +671,7 @@ async function kernel_main() {
     await post_jailbreak();
   }
 
-  logger.info('===SELESAI===');
+  logger.info('===GoldHEN Berhasil Dimuat===');
 }
 //#endregion
 //#region Structs
