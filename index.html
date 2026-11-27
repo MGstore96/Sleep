@@ -5,9 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lapse 3.0 PS4 by MGstore</title>
 <script>
-  if (window.applicationCache && window.applicationCache.status === window.applicationCache.UNCACHED) {
-    window.location.replace("cache.html");
-  }
+  (function() {
+    var app = window.applicationCache;
+    if (app && app.status === app.UNCACHED) {
+      window.location.replace("cache.html");
+      return;
+    }
+    if (app) {
+      app.addEventListener("updateready", function() {
+        try { app.swapCache(); } catch (e) {}
+      }, false);
+    }
+  })();
 </script>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -42,7 +51,7 @@
       <div id="tally"></div>
       <div id="summary"></div>
     </div>
-    
+
     <div id="liveLog" role="status" aria-live="polite">Starting WebKit...</div>
     <div class="ps-symbols">
       <span>△</span>
@@ -53,7 +62,7 @@
   </div>
 
   <footer>
-   <p> Powered by <span>MGstore</span> </p>
+  <p>  Powered by <span>MGstore</span> </p>
   </footer>
 
   <pre id="scr" aria-label="Host log" hidden></pre>
